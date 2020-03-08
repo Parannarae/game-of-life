@@ -20,7 +20,10 @@ ENV HOME_DIR /home/${USER_NAME}
 USER ${USER_NAME}
 
 WORKDIR ${HOME_DIR}
-# make python3 to be default
-RUN echo "alias python='python3'" > ${HOME_DIR}/.bashrc
 
-CMD ["/bin/bash"]
+# setup the game
+RUN mkdir src
+COPY start_game_of_life.sh .
+COPY ./src/* ./src/
+
+CMD ["/bin/bash", "start_game_of_life.sh"]
