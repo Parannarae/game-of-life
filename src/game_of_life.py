@@ -24,8 +24,14 @@ class StdoutInterface:
         
         print("====================")
 
+    def process_generation(self, num_of_generation: int = 1):
+        for _ in range(num_of_generation):
+            self.cur_game.proceed_generation()
+
 
 if __name__ == '__main__':
     interface = StdoutInterface()
     interface.start_new_game()
+    interface.print_board()
+    interface.process_generation()
     interface.print_board()
