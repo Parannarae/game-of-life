@@ -47,8 +47,8 @@ class Life:
     alive_cells = None
     generation = None
 
-    MIN_GRID_WIDTH = 5
-    MIN_GRID_HEIGHT = 5
+    MIN_GRID_WIDTH = 80
+    MIN_GRID_HEIGHT = 40
     MAX_GRID_SIZE = 500    # set a cap for the random generation
 
     def __init__(self):

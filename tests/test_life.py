@@ -6,6 +6,9 @@ from src.life import CellIndex, Life
 class TestGetNeighbors(TestCase):
     def setUp(self):
         self.game = Life()
+        # for the test purpose, change the min size
+        self.game.MIN_GRID_HEIGHT = 2
+        self.game.MIN_GRID_WIDTH = 2
         self.game.init_grid(5, 5, [])
 
     def test_get_neighbors(self):
@@ -58,6 +61,9 @@ class TestGetNeighbors(TestCase):
 class TestGetNumberOfAliveNeighbors(TestCase):
     def setUp(self):
         self.game = Life()
+        # for the test purpose, change the min size
+        self.game.MIN_GRID_HEIGHT = 2
+        self.game.MIN_GRID_WIDTH = 2
         self.game.init_grid(5, 5, [])
 
     def test_get_number_of_alive_neighbors_single_alive_cell(self):
@@ -121,6 +127,9 @@ class TestGetNumberOfAliveNeighbors(TestCase):
 class TestIsSurviveForTheNextGeneration(TestCase):
     def setUp(self):
         self.game = Life()
+        # for the test purpose, change the min size
+        self.game.MIN_GRID_HEIGHT = 2
+        self.game.MIN_GRID_WIDTH = 2
         self.game.init_grid(5, 5, [])
 
     def setup_data_and_check_result(
@@ -264,6 +273,9 @@ class TestIsSurviveForTheNextGeneration(TestCase):
 class TestProceedGeneration(TestCase):
     def setUp(self):
         self.game = Life()
+        # for the test purpose, change the min size
+        self.game.MIN_GRID_HEIGHT = 2
+        self.game.MIN_GRID_WIDTH = 2
 
     def print_board(self):
         """Show the board's status to Stdout
