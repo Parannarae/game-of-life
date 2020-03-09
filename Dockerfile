@@ -22,8 +22,9 @@ USER ${USER_NAME}
 WORKDIR ${HOME_DIR}
 
 # setup the game
-RUN mkdir src
+RUN mkdir src tests
 COPY start_game_of_life.sh .
 COPY ./src/* ./src/
+COPY ./tests/* ./tests/
 
 CMD ["/bin/bash", "start_game_of_life.sh"]
