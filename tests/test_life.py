@@ -1,3 +1,4 @@
+from typing import List
 from unittest import TestCase
 
 from src.life import CellIndex, Life
@@ -17,7 +18,11 @@ class TestGetNeighbors(TestCase):
             CellIndex(1, 0), CellIndex(1, 2),
             CellIndex(2, 0), CellIndex(2, 1), CellIndex(2, 2),
         ]
-        self.assertEqual(neighbors, exp_res)
+
+        # order of list can be differ
+        self.assertEqual(len(neighbors), len(exp_res))
+        for cell in exp_res:
+            self.assertTrue(cell in neighbors)
 
     def test_get_neighbors_target_cell_at_top_right_corner(self):
         """Check if neighbor cells are returned if the target cell is placed at the top right corner of the grid.
@@ -28,7 +33,11 @@ class TestGetNeighbors(TestCase):
             CellIndex(0, 3),
             CellIndex(1, 3), CellIndex(1, 4),
         ]
-        self.assertEqual(neighbors, exp_res)
+                
+        # order of list can be differ
+        self.assertEqual(len(neighbors), len(exp_res))
+        for cell in exp_res:
+            self.assertTrue(cell in neighbors)
 
     def test_get_neighbors_target_cell_at_bottom_left_corner(self):
         """Check if neighbor cells are returned if the target cell is placed at the bottom left corner of the grid.
@@ -39,7 +48,11 @@ class TestGetNeighbors(TestCase):
             CellIndex(3, 0), CellIndex(3, 1),
             CellIndex(4, 1),
         ]
-        self.assertEqual(neighbors, exp_res)
+        
+        # order of list can be differ
+        self.assertEqual(len(neighbors), len(exp_res))
+        for cell in exp_res:
+            self.assertTrue(cell in neighbors)
 
 
 class TestGetNumberOfAliveNeighbors(TestCase):
@@ -247,3 +260,152 @@ class TestIsSurviveForTheNextGeneration(TestCase):
             exp_res=False
         )
     
+
+class TestProceedGeneration(TestCase):
+    def setUp(self):
+        self.game = Life()
+
+    def print_board(self):
+        """Show the board's status to Stdout
+        
+        Args:
+            cur_life: Current game status instance
+        """
+        print("==========Gen {}==========".format(self.game.generation))
+        
+        for cur_row in self.game.grid:
+            print("  ".join(['o' if cur_col else 'x' for cur_col in cur_row]))
+        
+        print("====================")
+
+    def check_result(self, 
+                     num_of_rows: int, 
+                     num_of_cols: int, 
+                     exp_alive_cells: List[CellIndex],
+                     generation: int):
+        """Check the result of `proceed_generation`.
+        
+        Args:
+            num_of_rows: total number of rows of the game board
+            num_of_cols: total number of columns of the game board
+            exp_alive_cells: list of alive cells in the next generation
+            generation: generation number
+        """
+        # order of list can be differ
+        self.assertEqual(len(self.game.alive_cells), len(exp_alive_cells))
+        for cell in exp_alive_cells:
+            self.assertTrue(cell in self.game.alive_cells)
+        
+        self.assertEqual(self.game.generation, generation)
+        
+        # check all grid
+        for row in range(num_of_rows):
+            for col in range(num_of_cols):
+                cur_ind = CellIndex(row, col)
+                cur_status = self.game.grid[cur_ind.row][cur_ind.column]
+                if cur_ind in exp_alive_cells:
+                    self.assertTrue(cur_status)
+                else:
+                    self.assertFalse(cur_status)
+    
+    def test_proceed_generation(self):
+        """Check the game board after one generation.
+        """
+        num_of_rows = 5
+        num_of_cols = 6
+        self.game.init_grid(
+            width=num_of_cols,
+            height=num_of_rows,            
+            init_alive_cells=[CellIndex(1, 1), CellIndex(2, 1), CellIndex(2, 2), CellIndex(2, 3)]
+        )
+
+        self.print_board()
+        self.game.proceed_generation()        
+        self.print_board()
+
+        exp_alive_cells = [
+            CellIndex(1, 1),
+            CellIndex(2, 1),
+            CellIndex(2, 2),
+            CellIndex(3, 2),
+        ]
+
+        self.check_result(num_of_rows=num_of_rows, 
+                          num_of_cols=num_of_cols, 
+                          exp_alive_cells=exp_alive_cells,
+                          generation=1)
+
+    def test_proceed_generation_no_survival(self):
+        """Check the game board where no cell survives after one generation.
+        """
+        num_of_rows = 5
+        num_of_cols = 6
+        self.game.init_grid(
+            width=num_of_cols,
+            height=num_of_rows,            
+            init_alive_cells=[CellIndex(1, 1), CellIndex(2, 1)]
+        )
+
+        self.game.proceed_generation()
+
+        exp_alive_cells = []
+
+        self.check_result(num_of_rows=num_of_rows, 
+                          num_of_cols=num_of_cols, 
+                          exp_alive_cells=exp_alive_cells,
+                          generation=1)
+
+    def test_proceed_generation_twice(self):
+        """Check the game board after two generation.
+        """
+        num_of_rows = 5
+        num_of_cols = 6
+        self.game.init_grid(
+            width=num_of_cols,
+            height=num_of_rows,            
+            init_alive_cells=[CellIndex(1, 1), CellIndex(2, 1), CellIndex(2, 2), CellIndex(2, 3)]
+        )
+
+        self.game.proceed_generation()
+        self.print_board()
+        self.game.proceed_generation()
+        self.print_board()
+
+        exp_alive_cells = [
+            CellIndex(1, 1),
+            CellIndex(1, 2),
+            CellIndex(2, 1),
+            CellIndex(2, 2),
+            CellIndex(3, 1),
+            CellIndex(3, 2),
+        ]
+
+        self.check_result(num_of_rows=num_of_rows, 
+                          num_of_cols=num_of_cols, 
+                          exp_alive_cells=exp_alive_cells,
+                          generation=2)
+
+    def test_proceed_generation_with_corner_cells(self):
+        """Check the game board after one generation which has alive cells on the corner of the grid.
+        """
+        num_of_rows = 5
+        num_of_cols = 6
+        self.game.init_grid(
+            width=num_of_cols,
+            height=num_of_rows,            
+            init_alive_cells=[CellIndex(1, 0), CellIndex(2, 0), CellIndex(3, 0)]
+        )
+
+        self.print_board()
+        self.game.proceed_generation()        
+        self.print_board()
+
+        exp_alive_cells = [
+            CellIndex(2, 0),
+            CellIndex(2, 1),
+        ]
+
+        self.check_result(num_of_rows=num_of_rows, 
+                          num_of_cols=num_of_cols, 
+                          exp_alive_cells=exp_alive_cells,
+                          generation=1)
