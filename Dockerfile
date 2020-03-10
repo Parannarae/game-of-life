@@ -15,16 +15,15 @@ RUN rm -rf /temp \
 RUN adduser --disabled-password --gecos '' ubuntu
 
 # Work with a non-root user for security
-ENV USER_NAME "ubuntu"
-ENV HOME_DIR /home/${USER_NAME}
+ARG USER_NAME="ubuntu"
 USER ${USER_NAME}
 
-WORKDIR ${HOME_DIR}
+WORKDIR /home/${USER_NAME}
 
 # setup the game
-RUN mkdir src tests
+RUN mkdir src tests shared_folder
 COPY start_game_of_life.sh .
 COPY ./src/* ./src/
 COPY ./tests/* ./tests/
 
-CMD ["/bin/bash", "start_game_of_life.sh"]
+ENTRYPOINT [ "python3", "src/game_of_life.py" ]

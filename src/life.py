@@ -48,8 +48,8 @@ class Life:
     generation = None
 
     # TODO: change the size limit to the actual specification
-    MIN_GRID_WIDTH = 2
-    MIN_GRID_HEIGHT = 2
+    MIN_GRID_WIDTH = 80
+    MIN_GRID_HEIGHT = 40
     MAX_GRID_SIZE = 500    # set a cap for the random generation
 
     def __init__(self):

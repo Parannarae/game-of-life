@@ -5,3 +5,6 @@ services:
         build:
             context: .
         
+        volumes: 
+            - ./shared_folder:/home/ubuntu/shared_folder
+        

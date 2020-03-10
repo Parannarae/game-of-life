@@ -72,7 +72,7 @@ class FileParser:
         if file_name.split('.')[-1] != 'txt':
             file_name = file_name + '.txt'
 
-        with open(FILE_FOLDER + '/{}'.format(file_name), 'w') as fp:
+        with open(FILE_FOLDER + '/{}'.format(file_name), 'w+') as fp:
             fp.write("{} {}\n".format(self.grid_height, self.grid_width))
             fp.write("{}\n".format(len(self.alive_cells)))
             for cell in self.alive_cells:
@@ -240,6 +240,7 @@ class StdoutInterface:
             grid_height the grid height
             init_alive_cells: list of initial alive cells
         """
+        print("Starting the new game...")
         self.cur_game = Life()
         self.cur_game.start_game(grid_width=grid_width, grid_height=grid_height, init_alive_cells=alive_cells)
         self.print_board()
@@ -258,6 +259,7 @@ class StdoutInterface:
             init_alive_cells: list of initial alive cells
             number_of_generations: number of generations to process before dump the result to a file
         """
+        print("Starting the new game...")
         self.cur_game = Life()
         self.cur_game.start_game(grid_width=grid_width, grid_height=grid_height, init_alive_cells=alive_cells)
         self.process_generation(num_of_generation=number_of_generations)
