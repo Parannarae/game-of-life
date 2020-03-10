@@ -1,3 +1,5 @@
+import argparse
+
 from enum import Enum
 from typing import List
 
@@ -160,6 +162,16 @@ class StdoutInterface:
             self.cur_game.proceed_generation()
             self.print_board()
 
+    def _dump_game_to_file(self):
+        """Record current game status to a file.
+        """
+        fp = FileParser(grid_width=self.cur_game.grid_width,
+                        grid_height=self.cur_game.grid_height,
+                        alive_cells=self.cur_game.alive_cells)
+        file_name = 'result_dump.txt'
+        fp.dump_grid_to_file(file_name)
+        print("Alive cells for the {}th generation are recorded on {}".format(self.cur_game.generation, file_name))
+
     def process_menu(self, chosen: int) -> bool:
         """Given chosen, execute the appropriate process.
         
@@ -184,12 +196,7 @@ class StdoutInterface:
             self.process_generation(num_of_generation=num_of_generation)
             
         elif chosen == Menu.DUMP_RESULT.value:
-            fp = FileParser(grid_width=self.cur_game.grid_width,
-                            grid_height=self.cur_game.grid_height,
-                            alive_cells=self.cur_game.alive_cells)
-            file_name = 'result_dump.txt'
-            fp.dump_grid_to_file(file_name)
-            print("Alive cells for the {}th generation are recorded on {}".format(self.cur_game.generation, file_name))
+            self._dump_game_to_file()
 
         elif chosen ==Menu.QUIT.value:
             return False
@@ -226,7 +233,7 @@ class StdoutInterface:
                        grid_width: int = None, 
                        grid_height: int = None, 
                        alive_cells: List[CellIndex] = None):
-        """Start the new game of life.
+        """Start the new game of life in the interactive mode (where user input is required).
 
         Args:
             grid_width: the grid width
@@ -238,7 +245,75 @@ class StdoutInterface:
         self.print_board()
         self.select_menu()
 
+    def start_new_game_not_interactive(self,
+                                       grid_width: int,
+                                       grid_height: int, 
+                                       alive_cells: List[CellIndex],
+                                       number_of_generations: int):
+        """Start the new game of the life and dump the result of the game to a file.
+        
+        Args:
+            grid_width: the grid width
+            grid_height the grid height
+            init_alive_cells: list of initial alive cells
+            number_of_generations: number of generations to process before dump the result to a file
+        """
+        self.cur_game = Life()
+        self.cur_game.start_game(grid_width=grid_width, grid_height=grid_height, init_alive_cells=alive_cells)
+        self.process_generation(num_of_generation=number_of_generations)
+        self._dump_game_to_file()
+        
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="Play the game of life.")
+
+    parser.add_argument(
+        'args', 
+        nargs='*', 
+        type=str,
+        help=("1) If no argument is given, then the game start with random size and the initial alive cells. "
+              "2) The first argument should be the file name containing the status of the initial game. "
+              "3) The second argument represent the number of generation to process before dump the result to the file."
+              " e.g. `python game_of_life.py input.txt 10`"
+        )
+    )
+    
+    args = parser.parse_args().args
+    input_file_name = None
+    number_of_generations = None
+    if args:
+        input_file_name = args[0]
+        if len(args) > 1:
+            try:
+                number_of_generations = int(args[1].strip())
+            except ValueError:
+                raise Exception("The second argument should be a number ({})".format(args[1]))
+
     interface = StdoutInterface()
-    interface.start_new_game()
+    grid_width = None
+    grid_height = None
+    alive_cells = None
+    
+    if input_file_name:
+        fp = FileParser()
+        fp.parse_from_file(input_file_name)
+        grid_width = fp.grid_width
+        grid_height = fp.grid_height
+        alive_cells = fp.alive_cells
+
+    if number_of_generations is not None:
+        interface.start_new_game_not_interactive(
+            grid_width=grid_width,
+            grid_height=grid_height,
+            alive_cells=alive_cells,
+            number_of_generations=number_of_generations
+        )
+    
+    else:
+        interface.start_new_game(
+            grid_width=grid_width,
+            grid_height=grid_height,
+            alive_cells=alive_cells
+        )
+
+    
