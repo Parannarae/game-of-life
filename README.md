@@ -27,9 +27,11 @@ docker-compose build
 
 2. place the initial file under the directory `shared_folder`
 
-3. run the game (assuming the initial file name `initial_file.txt`)
+3. run the game
 
 ```bash
+# assume that the initial file name is `initial_file.txt`
+# progress 5 generations and create the result file
 docker-compose run main initial_file.txt 5
 ```
 
