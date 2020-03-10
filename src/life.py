@@ -88,8 +88,18 @@ class Life:
         Returns:
             list of index of alive cells
         """
-        # TODO: implement random assignment
-        res = [CellIndex(1, 1), CellIndex(1, 3), CellIndex(2, 1), CellIndex(2, 2), CellIndex(2, 3)]
+        res = []
+        max_number_of_cells = int(grid_width * grid_height / 4)
+        number_of_cells = random.randint(0, max_number_of_cells)
+        
+        while len(res) < number_of_cells:
+            # loop until all distinct random cells are created
+            row = random.randint(0, grid_height - 1)
+            col = random.randint(0, grid_width - 1)
+            cell = CellIndex(row, col)
+            if cell not in res:
+                res.append(cell)
+
         return res
 
     def start_game(self,
