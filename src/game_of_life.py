@@ -145,12 +145,15 @@ class StdoutInterface:
         Args:
             cur_life: Current game status instance
         """
-        print("==========Gen {}==========".format(self.cur_game.generation))
+        print()
+        print("Generation: {}".format(self.cur_game.generation))
+        separator_str = "===" * self.cur_game.grid_width
+        print(separator_str)
         
         for cur_row in self.cur_game.grid:
             print("  ".join(['o' if cur_col else 'x' for cur_col in cur_row]))
         
-        print("====================")
+        print(separator_str)
 
     def process_generation(self, num_of_generation: int = 1):
         """Process the game for num_of_generation
